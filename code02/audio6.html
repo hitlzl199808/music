@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放控件Audio测试</title>
+    <style>
+        #mid{border-radius:50%;}
+        .rainbow{animation: 20s rainbow infinite linear;}
+		@keyframes rainbow { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+    </style>
+</head>
+<body>
+    <h2>自己定制播放控件--播放结束后的处理</h2>
+    <audio id="aid" src="#"></audio>
+    <img id="mid" src="#" width="150"/><br/>
+    <div id="title"></div>
+    <button id="bid">播放</button>
+    <button id="sid">静音</button>
+    <button onclick="doNext()">下一首</button>
+    <br/>
+    播放时间:<span id="time"></span><br/><br/>
+
+    <script>
+        //var aid = document.getElementById("aid");
+        var aid = document.querySelector("#aid"); //获取audio音频播放控件节点对象
+        var bid = document.querySelector("#bid"); //获取按钮节点对象
+        var sid = document.querySelector("#sid"); //获取按钮节点对象
+        var mid = document.querySelector("#mid"); //获取图片点对象
+        var title = document.querySelector("#title"); //获取标题对象
+        var index = 0; //默认第一首歌
+        //歌曲资源数据（json）
+        var data = [{
+                "id": "1",
+                "title": "你笑起来真好看--李昕融",
+                "src": "./data/1.mp3",
+                "img": "./data/1.jpg"
+            }, {
+                "id": "2",
+                "title": "酒醉的蝴蝶--思思",
+                "src": "./data/2.mp3",
+                "img": "./data/2.jpg"
+            }, {
+                "id": "3",
+                "title": "桥边姑娘--张茜",
+                "src": "./data/3.mp3",
+                "img": "./data/3.jpg"
+            }];
+        
+        //当前网页打开完成后自动触发的函数
+        window.onload = function(){
+            fileInfo(index);
+        }
+
+
+        function fileInfo(index){
+            //data[0];
+            aid.setAttribute("src",data[index].src);
+            mid.setAttribute("src",data[index].img);
+            title.innerHTML = data[index].title;
+        }
+
+        //执行下一首歌曲选择
+        function doNext(){
+            index += 1; //自己累加1
+            if(index >= data.length){
+                index = 0
+            } 
+            fileInfo(index);
+        }
+
+        //为按钮添加点击事件
+        bid.onclick = function(){
+            //获取并判断播放控件的播放状态
+            if(aid.paused){//true表示暂停
+                aid.play();
+                this.innerHTML = "暂停";
+                mid.classList.add("rainbow"); //添加class属性值
+            }else{ //false表示播放
+                aid.pause();
+                this.innerHTML = "播放"; 
+                mid.classList.remove("rainbow");//移除class属性值
+            }
+        }
+
+        //静音事件处理
+        sid.onclick = function(){
+            //判断当前audio音频对象是否关闭声音
+			if(aid.muted){
+				
+                aid.muted = false; //开启声音
+			}else{
+				
+                aid.muted = true;  //静音
+			}
+		}
+
+        //当歌曲加载完成后执行
+        aid.oncanplaythrough = function(){
+            console.log("ok");
+            document.querySelector("#time").innerHTML = timeFormat(aid.currentTime)+"/"+timeFormat(aid.duration);
+            let playPromise = aid.play();
+			if (playPromise !== undefined) {
+			  playPromise.then(() => {
+				aid.play()
+			  }).catch(() => {})
+            }
+            if(!aid.paused){//true表示暂停
+                this.innerHTML = "暂停";
+                mid.classList.add("rainbow"); //添加class属性值
+            }
+        }
+
+        //为播放控件添加播放时间变化监听事件
+        aid.ontimeupdate = function(){
+            document.querySelector("#time").innerHTML = timeFormat(aid.currentTime)+"/"+timeFormat(aid.duration);
+        }
+
+
+        //为播放控件添加播放结束监听事件
+        aid.onended = function(){
+            doNext(); //执行下一首播放
+            /*
+            aid.currentTime = 0;
+            aid.pause();
+            this.innerHTML = "播放"; 
+            mid.classList.remove("rainbow");//移除class属性值
+            */
+        }
+
+         /**
+		 * 时间格式转换- 00:00
+		 */
+		var timeFormat = function(seconds){
+			var m = Math.floor(seconds/60)<10 ? "0"+Math.floor(seconds/60) : Math.floor(seconds/60);
+			var s = Math.floor(seconds-(m*60))<10 ? "0"+Math.floor(seconds-(m*60)) : Math.floor(seconds-(m*60));
+			return m+":"+s;
+		};
+    </script>
+</body>
+
+</html>

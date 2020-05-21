@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放控件Audio测试</title>
+    <style>
+        #mid{border-radius:50%;}
+        .rainbow{animation: 20s rainbow infinite linear;}
+		@keyframes rainbow { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+    
+        /*播放进度条效果*/
+        .time_axis{width:300px;}
+		.slideway{width:100%;height:4px;background:#000;position:relative;}
+		#ahead_head{width:12px;height:12px;background: #fc0;border-radius: 50%;position: absolute;top: -4px;}
+		#progress_bar{position:absolute;top:0;left:0;height:4px;background-image: -webkit-linear-gradient(left,red, #09f);display:block;width: 0;}
+    </style>
+</head>
+<body>
+    <h2>自己定制播放控件--格式化播放时间、显示播放进度条</h2>
+    <audio id="aid" src="./data/1.mp3"></audio>
+    <img id="mid" src="./data/1.jpg" width="150"/><br/>
+    <button id="bid">播放</button>
+    播放时间:<span id="time"></span><br/><br/>
+
+    <!--音频播放进度条-->
+    <div class="time_axis">
+        <div class="slideway">
+            <span id="progress_bar"></span>
+            <div id="ahead_head"></div>
+        </div>
+    </div>
+    <script>
+        //var aid = document.getElementById("aid");
+        var aid = document.querySelector("#aid"); //获取audio音频播放控件节点对象
+        var bid = document.querySelector("#bid"); //获取按钮节点对象
+        var mid = document.querySelector("#mid"); //获取图片点对象
+        
+        //为按钮添加点击事件
+        bid.onclick = function(){
+            //获取并判断播放控件的播放状态
+            if(aid.paused){//true表示暂停
+                aid.play();
+                this.innerHTML = "暂停";
+                mid.classList.add("rainbow"); //添加class属性值
+            }else{ //false表示播放
+                aid.pause();
+                this.innerHTML = "播放"; 
+                mid.classList.remove("rainbow");//移除class属性值
+            }
+        }
+
+        //为播放控件添加事件
+        aid.ontimeupdate = function(){
+            document.querySelector("#time").innerHTML = timeFormat(aid.currentTime)+"/"+timeFormat(aid.duration);
+            var v = (aid.currentTime/aid.duration)*100;
+            document.querySelector("#progress_bar").style.width = v+"%"; 
+            document.querySelector("#ahead_head").style.left = v+"%"; 
+        }
+
+         /**
+		 * 时间格式转换- 00:00
+		 */
+		var timeFormat = function(seconds){
+			var m = Math.floor(seconds/60)<10 ? "0"+Math.floor(seconds/60) : Math.floor(seconds/60);
+			var s = Math.floor(seconds-(m*60))<10 ? "0"+Math.floor(seconds-(m*60)) : Math.floor(seconds-(m*60));
+			return m+":"+s;
+		};
+    </script>
+</body>
+
+</html>

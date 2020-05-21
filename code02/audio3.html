@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放控件Audio测试</title>
+    <style>
+        #mid{border-radius:50%;}
+        .rainbow{animation: 20s rainbow infinite linear;}
+		@keyframes rainbow { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+    </style>
+</head>
+<body>
+    <h2>自己定制播放控件--单按钮实现(播放/暂停)功能切换，显示播放时间</h2>
+    <audio id="aid" src="./data/1.mp3"></audio>
+    <img id="mid" src="./data/1.jpg" width="150"/><br/>
+    <button id="bid">播放</button>
+    播放时间:<span id="time"></span>
+    <script>
+        //var aid = document.getElementById("aid");
+        var aid = document.querySelector("#aid"); //获取audio音频播放控件节点对象
+        var bid = document.querySelector("#bid"); //获取按钮节点对象
+        var mid = document.querySelector("#mid"); //获取图片点对象
+        
+        //为按钮添加点击事件
+        bid.onclick = function(){
+            //获取并判断播放控件的播放状态
+            if(aid.paused){//true表示暂停
+                aid.play();
+                this.innerHTML = "暂停";
+                mid.classList.add("rainbow"); //添加class属性值
+            }else{ //false表示播放
+                aid.pause();
+                this.innerHTML = "播放"; 
+                mid.classList.remove("rainbow");//移除class属性值
+            }
+        }
+
+        //为播放控件添加事件
+        aid.ontimeupdate = function(){
+            //将获取的播放时间添加到id属性值为time的节点中
+            document.querySelector("#time").innerHTML = aid.currentTime+"/"+aid.duration;
+        }
+
+    </script>
+</body>
+
+</html>

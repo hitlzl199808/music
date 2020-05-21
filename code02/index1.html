@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>涛哥--网易云音乐播放器</title>
+    <style type="text/css">
+        /*公共样式*/
+        *{margin:0px;padding:0px;}
+        html,body{width:100%;height:100%;}
+
+        /*使用矢量图标，定义字体*/
+        @font-face {
+            font-family: 'iconfont';
+            src: url('./font/iconfont.eot');
+            src: url('./font/iconfont.eot?#iefix') format('embedded-opentype'),
+                url('./font/iconfont.woff2') format('woff2'),
+                url('./font/iconfont.woff') format('woff'),
+                url('./font/iconfont.ttf') format('truetype'),
+                url('./font/iconfont.svg#iconfont') format('svg');
+        }
+
+        .iconfont {
+            font-family: "iconfont" !important;
+            font-size: 16px;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /*播放器最底部背景图片层，做了模糊滤镜处理*/
+        #back_box{width:100%;height:100%;background:url(./data/1.jpg) no-repeat center center;filter:blur(10px);}
+
+        /*播放器第二层主体盒子，半透明黑色背景颜色，里面包含所有播放器组件*/
+        #music_box{
+            position:absolute; /*绝对定位*/
+            top:0px;left:0px;
+            width:100%;height:100%;
+            background-color: rgba(0,0,0,0.5);
+            display:flex; /**/ 
+            flex-direction:column;
+            justify-content:space-between;
+        }
+
+        /*播放器主体布局块：头部标题、CD碟片、歌词容器、时间进度条、播放按钮控件容器*/
+        .header_row {width:100%;height:6%;display:flex;justify-content:space-between;align-items:center;}
+        .cd_row {width:100%; height:55%;border-top:1px solid #999;overflow:hidden;position:relative;}
+        .lyric_row {width:100%; height:20%;display:flex;flex-direction:column;align-items:center;}
+        .time_row {width:100%; height:6%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+        .btn_row {width:100%; height:12%;display:flex;justify-content:space-around;align-items:center;}
+
+        /*播放器头部标题*/
+        #music_title{font-size:20px;font-weight:400;color: #fff;}
+        .header_row span.iconfont{
+            font-size:30px;color: #fff;
+            margin-left:10px;margin-right:10px;}
+        
+        /*CD播放器样式*/
+        #cd_img{margin:10% auto;width:80%;height:auto;background:url(./data/1.jpg) no-repeat center center;background-size:65% auto;}
+        #cd_img img{display:block;width:100%;height:auto;margin:0px auto;border-radius:50%;}
+        /*CD碟片转圈动画效果*/
+        .rainbow{animation:20s rainbow linear infinite;}
+        @keyframes rainbow{0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        /*cd碟片上的棍*/
+        #needle{width:20%;height:auto;position:absolute;top:0px;left:46%;}
+        
+        /*歌词展示样式*/
+        #music_lyric{width:100%;height:100px;padding-top:10px;}
+        #music_lyric span{width: 100%;height:40px;text-align: center;font-size: 14px;font-weight: 400;display: block;}
+        .lyric_prev,.lyric_next{color: #d1d1d1;}
+        #music_lyric .lyric_now{color:#33d8ea;font-size:16px;}
+
+        /*播放时间展示样式*/
+        .time_box{display:flex;justify-content:space-between;font-size:13px;color: #fff;font-weight:400;width:100%;}
+        #now_time{margin-left:5px;}
+        #total_time{margin-right:5px;}
+        /*播放进度条效果*/
+        .time_axis{width:100%;}
+        .slideway{width:100%;height:4px;background:#000;position:relative;}
+        #ahead_head{width:12px;height:12px;background: #fff;border-radius: 50%;position: absolute;top: -4px;left:50%}
+	    #progress_bar{position:absolute;top:0;left:0;height:4px;background-image: -webkit-linear-gradient(left,red, #09f);display:block;width:50%;}
+
+        /*播放按钮控件样式*/
+        #volume_toggle{font-size:36px;color:#fff;}
+		#btn_prev{font-size:40px;color:#fff;}
+        #btn_play{font-size:70px;color:#fff;}
+		#btn_next{font-size:40px;color:#fff;}
+		#loop_type{font-size:40px;color:#fff;}
+    </style>
+</head>
+<body>
+    <!-- 页面的背景层 -->
+    <div id="back_box"></div>
+
+    <!-- 音乐播放器容器盒子 -->
+    <div id="music_box">
+        <!--播放器头部标题-->
+        <div class="header_row">
+            <span class="iconfont">&#xe6e2;</span>
+            <span id="music_title">你笑起来真好看</span>
+            <span class="iconfont">&#xe69d;</span>
+        </div>
+
+        <!--模拟cd播放机-->
+        <div class="cd_row">
+            <div id="cd_img" class="rainbow">
+                <img src="images/disc-ip6.png"/>
+            </div>
+            <img id="needle" class="run" src="./images/needle-ip6.png"/>
+        </div>
+
+        <!--歌词区域-->
+        <div class="lyric_row" id="music_lyric">
+            <span class="lyric_prev">歌手：李昕融</span>
+            <span class="lyric_now">你笑起来真好看</span>
+            <span class="lyric_next">像春天的花一样</span>
+        </div>
+
+        <!--显示播放时间、进度条-->
+        <div class="time_row">
+            <!--音频时间-->
+            <div class="time_box">
+                <span id="now_time">00:00</span>
+                <span id="total_time">00:00</span>
+            </div>
+            <!--音频播放进度条-->
+            <div class="time_axis">
+                <div class="slideway">
+                    <span id="progress_bar"></span>
+                    <div id="ahead_head"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--按钮（暂停/播放、上一曲、下一曲、声音开关、音量调节、循环播放）-->
+        <div class="btn_row">
+            <span id="volume_toggle" class="iconfont">&#xe6e4;</span>
+            <span id="btn_prev" class="iconfont" >&#xe6a5;</span>
+            <span id="btn_play" class="iconfont" >&#xe6a8;</span>
+            <span id="btn_next" class="iconfont">&#xe69f;</span>
+            <span id="loop_type" class="iconfont" item="1">&#xe69e;</span>
+        </div>
+    </div>
+</body>
+</html>

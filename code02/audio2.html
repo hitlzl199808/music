@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放控件Audio测试</title>
+    <style>
+        #mid{border-radius:50%;}
+        .rainbow{animation: 20s rainbow infinite linear;}
+		@keyframes rainbow { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+    </style>
+</head>
+<body>
+    <h2>自己定制播放控件--播放和暂停功能的实现</h2>
+    <audio id="aid" src="./data/1.mp3"></audio>
+    <img id="mid" src="./data/1.jpg" width="150"/><br/>
+    <button onclick="doStart()">播放</button>
+    <button onclick="doStop()">暂停</button>
+    <script>
+        //定义doStart播放函数
+        function doStart(){
+            //console.log("aaaaa");
+            //获取音频节点对象
+            var ado = document.querySelector("#aid");
+            //调用play（）方法
+            ado.play();
+
+            //获取图片节点并添加class类属性rainbow
+            document.querySelector("#mid").classList.add("rainbow");
+        }
+
+        function doStop(){
+            //获取音频节点并执行暂停播放
+            document.querySelector("#aid").pause();
+
+            //获取图片节点并移除class类属性rainbow
+            document.querySelector("#mid").classList.remove("rainbow");
+        }
+    </script>
+</body>
+
+</html>

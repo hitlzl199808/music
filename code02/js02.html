@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .cc{background-color:#ddd;}
+
+    </style>
+</head>
+<body>
+    <h1 id="hid">JavaScript实例-- 事件处理</h1>
+
+
+    <script>
+        //获取网页中h1元素节点对象（标题标签）
+        //获取id属性值为hid的节点对象
+        //var ob = document.getElementById("hid");
+        var ob = document.querySelector("#hid");
+        //console.log(ob);
+        ob.style.color = "red"; //设置css样式
+        ob.classList.add("cc");//添加class类属性
+        ob.classList.add("dd");//添加class类属性
+
+        //添加单击事件
+        ob.onclick = function(){
+            alert("Hello!");
+        }
+    </script>
+</body>
+</html>
